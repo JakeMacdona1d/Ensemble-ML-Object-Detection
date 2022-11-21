@@ -1,0 +1,26 @@
+<annotation>
+	<folder>chickens</folder>
+	<filename>be2aba67e8e556feb5005ada90556918.jpg</filename>
+	<path>C:\Users\tojak\Desktop\gitProj\Classification-and-Localization\chickens\be2aba67e8e556feb5005ada90556918.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>736</width>
+		<height>736</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>buff</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>62</xmin>
+			<ymin>228</ymin>
+			<xmax>679</xmax>
+			<ymax>671</ymax>
+		</bndbox>
+	</object>
+</annotation>

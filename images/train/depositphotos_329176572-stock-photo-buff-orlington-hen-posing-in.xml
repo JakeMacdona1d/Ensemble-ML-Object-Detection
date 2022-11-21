@@ -1,0 +1,26 @@
+<annotation>
+	<folder>chickens</folder>
+	<filename>depositphotos_329176572-stock-photo-buff-orlington-hen-posing-in.jpg</filename>
+	<path>D:\GitHub\Classification-and-Localization\chickens\depositphotos_329176572-stock-photo-buff-orlington-hen-posing-in.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1600</width>
+		<height>1167</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>buff</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>454</xmin>
+			<ymin>133</ymin>
+			<xmax>1418</xmax>
+			<ymax>861</ymax>
+		</bndbox>
+	</object>
+</annotation>

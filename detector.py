@@ -50,7 +50,7 @@ class Detector:
         detections = self.model(inputTensor)
 
         bboxs = detections['detection_boxes'][0].numpy()
-        classIndexes = detections['detection_classes'][0].numpy().astype(np.int32)
+        classIndexes = detections['detection_classes'][0].numpy().astype(np.int64)
         classScores = detections['detection_scores'][0].numpy()
 
         imH, imW, imC = image.shape
@@ -72,7 +72,6 @@ class Detector:
 
                 if (classLabelText == "person") : 
                     classLabelText = "hoe"
-                    print("whore")
 
                 displayText = '{}: {}%'.format(classLabelText,classConfidence)
 

@@ -1,0 +1,26 @@
+<annotation>
+	<folder>chickens</folder>
+	<filename>images (5).jpg</filename>
+	<path>D:\GitHub\Classification-and-Localization\chickens\images (5).jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>206</width>
+		<height>245</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>buff</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>19</xmin>
+			<ymin>19</ymin>
+			<xmax>184</xmax>
+			<ymax>173</ymax>
+		</bndbox>
+	</object>
+</annotation>

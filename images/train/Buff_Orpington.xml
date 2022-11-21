@@ -1,0 +1,26 @@
+<annotation>
+	<folder>chickens</folder>
+	<filename>Buff_Orpington.jpg</filename>
+	<path>D:\GitHub\Classification-and-Localization\chickens\Buff_Orpington.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>2176</width>
+		<height>1449</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>buff</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>574</xmin>
+			<ymin>183</ymin>
+			<xmax>1312</xmax>
+			<ymax>883</ymax>
+		</bndbox>
+	</object>
+</annotation>
