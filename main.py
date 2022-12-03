@@ -5,6 +5,19 @@ from detector import *
 # tf.config.set_visible_devices([], 'GPU')
 # tf.debugging.set_log_device_placement(True)
 
+# Enable GPU dynamic memory allocation
+gpus = tf.config.experimental.list_physical_devices('GPU')
+for gpu in gpus:
+    tf.config.experimental.set_memory_growth(gpu, True)
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Suppress TensorFlow logging (1)
+
+tf.get_logger().setLevel('ERROR')           # Suppress TensorFlow logging (2)
+
+
+#Even faster
+# modelURL = "http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8.tar.gz"
+
 #Faster but less accurate model
 modelURL = "http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v1_fpn_640x640_coco17_tpu-8.tar.gz"
 
@@ -12,7 +25,13 @@ modelURL = "http://download.tensorflow.org/models/object_detection/tf2/20200711/
 # modelURL = "http://download.tensorflow.org/models/object_detection/tf2/20200711/faster_rcnn_inception_resnet_v2_1024x1024_coco17_tpu-8.tar.gz"
 
 classFile = "coco.names"
-imagePath = "test/2.jpg"
+# imagePath = "test\\IMG_5433.jpg"
+
+# imagePath = "test\\difFace.mp4"
+
+imagePath = "test\\test2.jpg"
+
+
 
 detector = Detector()
 detector.readClasses(classFile)

@@ -1,6 +1,10 @@
 import cv2, time, os, tensorflow as tf
 from os.path import exists
+import pathlib
 import numpy as np
+
+from specifyObj import *
+from vidOutput import *
 
 from tensorflow.python.keras.utils.data_utils import get_file
 
@@ -9,19 +13,14 @@ class Detector:
         pass
     def readClasses(self,classesFilePath):
         with open(classesFilePath, 'r') as f:
-            self.classesList = f.read().splitlines()
-        
+            self.classesList = f.read().splitlines()     
         self.colorList = np.random.uniform(low = 0, high= 255, size=(len(self.classesList), 3))
 
-        print (len(self.classesList), len(self.colorList))
-    
     def downLoadModel(self, modelURL) :
         fileName = os.path.basename(modelURL)
         self.modelName = fileName[:fileName.index('.')]
         self.cacheDir = "./pretrainedModels"
 
-        # self.modelName = 
-        
         if (os.path.exists("pretrainedModels\checkpoints\\" + fileName)) :
             return
 
@@ -31,77 +30,116 @@ class Detector:
         origin=modelURL, cache_dir=self.cacheDir, cache_subdir="checkpoints",extract= True)
     
     def loadModel(self):
-        print ("loading model " + self.modelName)
+        tf.keras.backend.clear_session()
 
-        # Triggers error
-        # tf.keras.backend.clear_session()
+        print('Loading model...', end='')
+        start_time = time.time()
+
 
         self.model = tf.saved_model.load(os.path.join(self.cacheDir, "checkpoints", self.modelName, "saved_model"))
 
-        print ("Model " + self.modelName + " loaded successfully")
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print('Done! Took {} seconds'.format(elapsed_time))
     
-    def createBoundigBoz(self,image, threshold = 0.5):
-        inputTensor = cv2.cvtColor(image.copy(),cv2.COLOR_BGR2RGB)
-        inputTensor = tf.convert_to_tensor(inputTensor, dtype=tf.uint8)
-        inputTensor = inputTensor[tf.newaxis,...]
-        # inputTensor = inputTensor[:, :, :] # <= add this line
+
+    # This bounding box function differs from the other beacause it was the downloaded 
+    #and model lacks certain features that are available in our custum training.
+    def createBoundigBoz(self, imagePath, threshold = 0.5):
+        image = None
+        video = None
+        images = []
+        if pathlib.Path(imagePath).suffix == ".mp4" :
+            video = cv2.VideoCapture(imagePath)
+        else : 
+            image = cv2.imread(imagePath)
+
+        specModel = loadModel("exported-models/my_mobilenet_model/saved_model")
+
+        playing = True
+        while playing :
+            if not video == None :
+                 ret, image = video.read()
+                 if not ret : break
+            else : playing = False
+
+            inputTensor = cv2.cvtColor(image.copy(),cv2.COLOR_BGR2RGB)
+            inputTensor = tf.convert_to_tensor(inputTensor, dtype=tf.uint8)
+            inputTensor = inputTensor[tf.newaxis,...]
+
+            detections = self.model(inputTensor)
+
+            bboxs = detections['detection_boxes'][0].numpy()
+            classIndexes = detections['detection_classes'][0].numpy().astype(np.int64)
+            classScores = detections['detection_scores'][0].numpy()
+
+            imH, imW, imC = image.shape
+
+            bboxIdx = tf.image.non_max_suppression(bboxs,classScores,max_output_size=50,
+            iou_threshold=threshold, score_threshold=threshold)
+
+            if len(bboxIdx) != 0 :
+                for i in bboxIdx :
+                    bbox = tuple(bboxs[i].tolist())
+                    classConfidence = round(100*classScores[i])
+                    classIndex = classIndexes[i] -1
+
+                    classLabelText = self.classesList[classIndex]
+
+                    classColor = self.colorList[classIndex]
 
 
-        detections = self.model(inputTensor)
+                    displayText = '{}: {}%'.format(classLabelText,classConfidence)
 
-        bboxs = detections['detection_boxes'][0].numpy()
-        classIndexes = detections['detection_classes'][0].numpy().astype(np.int64)
-        classScores = detections['detection_scores'][0].numpy()
+                    ymin, xmin, ymax, xmax = bbox
 
-        imH, imW, imC = image.shape
+                    xmin, xmax, ymin, ymax = (int(xmin * imW), int(xmax *imW), int(ymin *imH), int(ymax * imH))
 
-        bboxIdx = tf.image.non_max_suppression(bboxs,classScores,max_output_size=50,
-        iou_threshold=threshold, score_threshold=threshold)
-
-        print ("bbox id : "+str(bboxIdx))
-
-        if len(bboxIdx) != 0 :
-            for i in bboxIdx :
-                bbox = tuple(bboxs[i].tolist())
-                classConfidence = round(100*classScores[i])
-                classIndex = classIndexes[i] -1
-
-                classLabelText = self.classesList[classIndex]
-
-                classColor = self.colorList[classIndex]
-
-                if (classLabelText == "person") : 
-                    classLabelText = "hoe"
-
-                displayText = '{}: {}%'.format(classLabelText,classConfidence)
-
-                ymin, xmin, ymax, xmax = bbox
-
-                xmin, xmax, ymin, ymax = (xmin * imW, xmax *imW, ymin *imH, ymax * imH)
-
-                xmin, xmax, ymin, ymax = int(xmin), int(xmax), int(ymin), int(ymax)
-
-                cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color = classColor, thickness= 1 )
-                cv2.putText(image, displayText, (xmin,ymin - 10), cv2.FONT_HERSHEY_PLAIN, 1 , classColor, 2)
-            return image
-
-                # print (ymin, xmin, ymax, xmax)
-                # break
+                    # xmin, xmax, ymin, ymax = int(xmin), int(xmax), int(ymin), int(ymax)
 
 
+                    if (classLabelText == "person") : 
+                        scale = 1.1
+                        crop = image[ymin:int(ymax),xmin:xmax ] # Slicing to crop the image
+                        # crop = specify(crop, specModel, .15)
+                        confidence, subBox = specify(crop, specModel, .30)
+                        subH, subW, subC = crop.shape
+       
+                        if (confidence > .60) :
+                            print("xmin" + str(subBox[1]))
+                            print("ymin" + str(subBox[0]))
+                            print("xmax" + str(subBox[3]))
+                            print("ymax" + str(subBox[2]))
+                            print ((xmin))
+                            print (int(xmin + (subBox[1] * subW)))
+                            cv2.rectangle(image, 
+                             (int(xmin + (subBox[1] * subW)),
+                              int(ymin + (subBox[0] * subH))),
+                               (int(xmin + (subBox[3] * subW)),
+                                int(ymin + (subBox[2] * subH))),
+                                 color = self.colorList[classIndex + 1],
+                                  thickness= 2)
+                        # cv2.putText(image, confidence, (int(xmin * subBox[1]),int(ymin * subBox[0]) - 10), cv2.FONT_HERSHEY_PLAIN, 1 , classColor, 2)
+                        # image[ymin:int(ymax * scale), xmin:xmax ] = crop
+
+                        
+                    cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color = classColor, thickness= 2 )
+                    cv2.putText(image, displayText, (xmin,ymin - 10), cv2.FONT_HERSHEY_PLAIN, 1 , classColor, 2)
+            images.append(image)
+        if playing : return image, images
+        return image, None
+
+    
     def predictImage(self, imagePath, threshold) :
-        image = cv2.imread(imagePath)
-        # cv2.imshow("Result", image)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        bboxImage, video = self.createBoundigBoz(imagePath, threshold)
 
-
-
-        bboxImage = self.createBoundigBoz(image, threshold)
-
+        if not video == None :
+            makeVideo(video)
+            return
+        
         cv2.imwrite(self.modelName + ".jpg", bboxImage)
-
         cv2.imshow("Result", bboxImage)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+        return bboxImage
         
