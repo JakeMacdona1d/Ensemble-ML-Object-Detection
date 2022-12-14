@@ -106,15 +106,20 @@ class Detector:
                     cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color = classColor, thickness= 2 )
                     cv2.putText(image, displayText, (xmin,ymin - 10), cv2.FONT_HERSHEY_PLAIN, 1 , classColor, 2)
             images.append(image)
-        if playing : return image, images
-        return image, None
+        if playing : return images
+        return image
 
     
     def predictImage(self, mediaPath, threshold) :
-        bboxImage, video = self.createBoundigBoz(mediaPath, threshold)
+        rawMedia = self.createBoundigBoz(mediaPath, threshold)
 
-        if not video == None :
-            makeVideo(video)
+        print(type(rawMedia))
+
+        makeMedia(rawMedia)
+
+
+        # if not video == None :
+        #     makeVideo(video)
         
-        return bboxImage
+        return media
         
