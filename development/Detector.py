@@ -101,7 +101,7 @@ class Detector:
                               color = self.colorList[classIndex + 1],thickness= 2) 
 
                             cv2.putText(image, displaySpec, (self.humanModel.item.xmin, self.humanModel.item.ymin - 10),
-                             cv2.FONT_HERSHEY_PLAIN, 1 , classColor, 2)
+                             cv2.FONT_HERSHEY_PLAIN, 1 , self.colorList[classIndex + 1], 2)
                         
                     cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color = classColor, thickness= 2 )
                     cv2.putText(image, displayText, (xmin,ymin - 10), cv2.FONT_HERSHEY_PLAIN, 1 , classColor, 2)
@@ -112,14 +112,5 @@ class Detector:
     
     def predictImage(self, mediaPath, threshold) :
         rawMedia = self.createBoundigBoz(mediaPath, threshold)
-
-        print(type(rawMedia))
-
         makeMedia(rawMedia)
 
-
-        # if not video == None :
-        #     makeVideo(video)
-        
-        return media
-        

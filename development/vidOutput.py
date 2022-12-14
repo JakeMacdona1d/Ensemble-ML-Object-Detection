@@ -28,32 +28,10 @@ def makeVideo(images):
     video_slides.write_videofile("output_video.mp4", fps)
 
 def makeMedia(media) :
-    if ()
-
-
-
-
-
-# # # creating an array using np.full 
-# # # 255 is code for white color
-# array_created = []
-# array_created.append(np.full((500, 500, 3),
-#                         255, dtype = np.uint8))
-# img_clips = []
-# array_created.append(np.full((500, 500, 3),
-#                     255, dtype = np.uint8))
-
-# print(type(array_created[0]))
-# # # displaying the image
-
-# img_clips = []
-
-# for i in array_created :
-#     slide = ImageClip(i,duration=2)
-#     img_clips.append(slide)
-
-
-# #concatenating slides
-# video_slides = concatenate_videoclips(img_clips, method='compose')
-# #exporting final video
-# video_slides.write_videofile("output_video.mp4", fps=24)
+    if type(media) == "List" :
+        makeVideo(media)
+        return
+    cv2.imwrite("output/" + "output" + ".jpg", media)
+    cv2.imshow("Result", media)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
