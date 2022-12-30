@@ -1,5 +1,3 @@
-# some inspiration from: 
-# https://www.youtube.com/watch?v=2yQqg_mXuPQ
 from development.Detector import *
 
 # Enable GPU dynamic memory allocation
