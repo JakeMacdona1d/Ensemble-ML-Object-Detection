@@ -13,7 +13,10 @@ tf.get_logger().setLevel('ERROR')           # Suppress TensorFlow logging (2)
 # modelURL = "http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8.tar.gz"
 
 #Faster but less accurate model
-modelURL = "http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v1_fpn_640x640_coco17_tpu-8.tar.gz"
+# modelURL = "http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v1_fpn_640x640_coco17_tpu-8.tar.gz" took 17.60349702835083
+
+#took 11.92548394203186
+modelURL = "http://download.tensorflow.org/models/object_detection/tf2/20200711/efficientdet_d4_coco17_tpu-32.tar.gz" 
 
 #Slower but more accurate model
 # modelURL = "http://download.tensorflow.org/models/object_detection/tf2/20200711/faster_rcnn_inception_resnet_v2_1024x1024_coco17_tpu-8.tar.gz"
@@ -28,5 +31,6 @@ detector.readClasses(classFile)
 detector.downLoadModel(modelURL)
 
 detector.loadModel()
+
 
 image = detector.predictImage(imagePath, threshold = 0.5)

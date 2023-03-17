@@ -3,6 +3,8 @@ from os.path import exists
 import pathlib
 import numpy as np
 
+import time
+
 from development.SubClassDetector import *
 from development.vidOutput import *
 
@@ -111,6 +113,10 @@ class Detector:
 
     
     def predictImage(self, mediaPath, threshold) :
+        start = time.time()
         rawMedia = self.createBoundigBoz(mediaPath, threshold)
+        end = time.time()
+
+        print(end - start)
         makeMedia(rawMedia)
 
